@@ -12,15 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,10 +35,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.foundation.clickable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,7 +69,7 @@ fun PantallaMovimientos(
     viewModel: MovimientosViewModel = hiltViewModel()
 ) {
     val estado by viewModel.estado.collectAsStateWithLifecycle()
-    var movimientoAMenu by remember { mutableStateOf<Long?>(null) }
+    var movimientoConAcciones by remember { mutableStateOf<Movimiento?>(null) }
     var movimientoAEliminar by remember { mutableStateOf<Movimiento?>(null) }
     val monedaPrincipal = "COP"
 
@@ -144,18 +147,21 @@ fun PantallaMovimientos(
             item { Cargando(modifier = Modifier.fillMaxWidth()) }
         } else if (estado.movimientos.isEmpty()) {
             item {
+                val tipoSeleccionado = viewModel.tipoFiltro
+                val hayFiltro = viewModel.busqueda.isNotBlank() || tipoSeleccionado != null
                 EstadoVacio(
                     titulo = "Sin movimientos",
-                    mensaje = if (viewModel.busqueda.isBlank()) {
-                        "Registra tu primer ingreso o gasto con el botón +."
-                    } else {
-                        "No se encontraron movimientos que coincidan con la búsqueda."
+                    mensaje = when {
+                        viewModel.busqueda.isNotBlank() ->
+                            "No se encontraron movimientos que coincidan con la búsqueda."
+                        tipoSeleccionado != null ->
+                            "No hay movimientos de tipo ${tipoSeleccionado.etiqueta.lowercase()}. " +
+                                "Toca de nuevo el filtro para ver todos."
+                        else -> "Registra tu primer ingreso o gasto con el botón +."
                     },
                     icono = Icons.Default.Search,
-                    textoAccion = if (viewModel.busqueda.isNotBlank()) "Limpiar búsqueda" else null,
-                    onAccion = if (viewModel.busqueda.isNotBlank()) {
-                        { viewModel.limpiarFiltros() }
-                    } else null
+                    textoAccion = if (hayFiltro) "Limpiar filtros" else null,
+                    onAccion = if (hayFiltro) ({ viewModel.limpiarFiltros() }) else null
                 )
             }
         } else {
@@ -167,22 +173,40 @@ fun PantallaMovimientos(
                         ?.let { estado.categorias[it]?.nombre }
                         .orEmpty(),
                     moneda = movimiento.moneda.ifBlank { monedaPrincipal },
-                    menuAbierto = movimientoAMenu == movimiento.id,
-                    onAbrirMenu = { movimientoAMenu = movimiento.id },
-                    onCerrarMenu = { movimientoAMenu = null },
-                    onEditar = {
-                        movimientoAMenu = null
-                        onEditarMovimiento(movimiento.id)
-                    },
-                    onDuplicar = {
-                        movimientoAMenu = null
-                        onDuplicarMovimiento(movimiento.id)
-                    },
-                    onEliminar = {
-                        movimientoAMenu = null
-                        movimientoAEliminar = movimiento
-                    }
+                    onAbrirAcciones = { movimientoConAcciones = movimiento }
                 )
+            }
+        }
+    }
+
+    movimientoConAcciones?.let { movimiento ->
+        ModalBottomSheet(
+            onDismissRequest = { movimientoConAcciones = null },
+            containerColor = ColoresWallance.SuperficieElevada
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+                Text(
+                    text = "Acciones del movimiento",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = ColoresWallance.TextoPrincipal,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
+                )
+                FilaAccion(texto = "Editar", icono = Icons.Default.Edit) {
+                    movimientoConAcciones = null
+                    onEditarMovimiento(movimiento.id)
+                }
+                FilaAccion(texto = "Duplicar", icono = Icons.Default.ContentCopy) {
+                    movimientoConAcciones = null
+                    onDuplicarMovimiento(movimiento.id)
+                }
+                FilaAccion(
+                    texto = "Eliminar",
+                    icono = Icons.Default.Delete,
+                    colorTexto = ColoresWallance.RojoPerdida
+                ) {
+                    movimientoConAcciones = null
+                    movimientoAEliminar = movimiento
+                }
             }
         }
     }
@@ -239,12 +263,7 @@ private fun FilaMovimiento(
     nombreCuenta: String,
     nombreCategoria: String,
     moneda: String,
-    menuAbierto: Boolean,
-    onAbrirMenu: () -> Unit,
-    onCerrarMenu: () -> Unit,
-    onEditar: () -> Unit,
-    onDuplicar: () -> Unit,
-    onEliminar: () -> Unit
+    onAbrirAcciones: () -> Unit
 ) {
     val color = when {
         movimiento.tipo.esIngreso -> ColoresWallance.VerdeGanancia
@@ -300,36 +319,45 @@ private fun FilaMovimiento(
                 fontWeight = FontWeight.SemiBold,
                 color = color
             )
-            Box {
-                Text(
-                    text = "⋮",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = ColoresWallance.TextoSecundario,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable(onClick = onAbrirMenu)
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                )
-                DropdownMenu(
-                    expanded = menuAbierto,
-                    onDismissRequest = onCerrarMenu,
-                    containerColor = ColoresWallance.SuperficieElevada
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Editar") },
-                        onClick = onEditar
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Duplicar") },
-                        onClick = onDuplicar
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Eliminar", color = ColoresWallance.RojoPerdida) },
-                        onClick = onEliminar
-                    )
-                }
-            }
+            Text(
+                text = "⋮",
+                style = MaterialTheme.typography.titleLarge,
+                color = ColoresWallance.TextoSecundario,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable(onClick = onAbrirAcciones)
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            )
         }
+    }
+}
+
+@Composable
+private fun FilaAccion(
+    texto: String,
+    icono: ImageVector,
+    colorTexto: Color = ColoresWallance.TextoPrincipal,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp, vertical = 14.dp)
+    ) {
+        Icon(
+            imageVector = icono,
+            contentDescription = texto,
+            tint = colorTexto,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = texto,
+            style = MaterialTheme.typography.bodyLarge,
+            color = colorTexto
+        )
     }
 }
 
