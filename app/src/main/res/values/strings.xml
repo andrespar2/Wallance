@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nombre_aplicacion">Wallance</string>
+    <string name="eslogan">Tu dinero. Tu equilibrio.</string>
+    <string name="credito_desarrollador">Desarrollado por andrespar2</string>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta Black Modern AMOLED de Wallance -->
+    <color name="negro_amoled">#FF000000</color>
+    <color name="negro_secundario">#FF0B0E11</color>
+    <color name="tarjeta">#FF181A20</color>
+    <color name="superficie_elevada">#FF1E2329</color>
+    <color name="amarillo_principal">#FFFCD535</color>
+    <color name="verde_ganancia">#FF0ECB81</color>
+    <color name="rojo_perdida">#FFF6465D</color>
+    <color name="texto_principal">#FFFFFFFF</color>
+    <color name="texto_secundario">#FF848E9C</color>
+</resources>
