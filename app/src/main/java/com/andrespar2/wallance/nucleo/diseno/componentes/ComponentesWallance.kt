@@ -2,6 +2,8 @@ package com.andrespar2.wallance.nucleo.diseno.componentes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,8 +42,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.andrespar2.wallance.nucleo.comun.Utilidades
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
 import java.math.BigDecimal
 
@@ -289,7 +293,12 @@ fun EstadoVacio(
     }
 }
 
+/**
+ * Hoja inferior fluida reutilizable para formularios.
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
+
 fun IndicadorCarga(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
         CircularProgressIndicator(color = ColoresWallance.AmarilloPrincipal)
@@ -367,6 +376,17 @@ fun PuntoColor(color: Long, modifier: Modifier = Modifier) {
     )
 }
 
+/** Separador sutil para filas dentro de una tarjeta. */
+@Composable
+fun Separator(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(ColoresWallance.BordeSutil)
+    )
+}
+
 /**
  * Selector desplegable genérico con el estilo de Wallance.
  */
@@ -439,3 +459,216 @@ fun <T> SelectorDesplegable(
         }
     }
 }
+
+/**
+ * Hoja inferior fluida reutilizable para formularios.
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+
+fun <T> SelectorPorHoja(
+    valor: T?,
+    opciones: List<T>,
+    etiqueta: String,
+    onSeleccion: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    textoDe: (T) -> String = { it.toString() },
+    textoValor: String = ""
+) {
+    var abierto by remember { mutableStateOf(false) }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(ColoresWallance.Tarjeta)
+            .clickable { abierto = true }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = etiqueta,
+                style = MaterialTheme.typography.labelMedium,
+                color = ColoresWallance.TextoSecundario
+            )
+            Text(
+                text = textoValor.ifBlank { valor?.let(textoDe) ?: "Seleccionar" },
+                style = MaterialTheme.typography.bodyLarge,
+                color = ColoresWallance.TextoPrincipal
+            )
+        }
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = "Desplegar opciones",
+            tint = ColoresWallance.TextoSecundario
+        )
+    }
+
+    if (abierto) {
+        androidx.compose.material3.ModalBottomSheet(
+            onDismissRequest = { abierto = false },
+            sheetState = androidx.compose.material3.rememberModalBottomSheetState(
+                skipPartiallyExpanded = true
+            ),
+            containerColor = ColoresWallance.SuperficieElevada
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = etiqueta,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = ColoresWallance.TextoPrincipal,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp)
+                )
+                opciones.forEach { opcion ->
+                    val seleccionada = opcion == valor
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onSeleccion(opcion)
+                                abierto = false
+                            }
+                            .padding(horizontal = 24.dp, vertical = 14.dp)
+                    ) {
+                        Text(
+                            text = textoDe(opcion),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (seleccionada) ColoresWallance.AmarilloPrincipal
+                            else ColoresWallance.TextoPrincipal,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (seleccionada) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = "Seleccionado",
+                                tint = ColoresWallance.AmarilloPrincipal
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** Hoja inferior fluida reutilizable para formularios. */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+fun ModalBottomSheetFlujo(
+    onDismissRequest: () -> Unit,
+    titulo: String,
+    contenido: @Composable () -> Unit
+) {
+    androidx.compose.material3.ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(
+            skipPartiallyExpanded = true
+        ),
+        containerColor = ColoresWallance.SuperficieElevada
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 12.dp)
+        ) {
+            Text(
+                text = titulo,
+                style = MaterialTheme.typography.titleMedium,
+                color = ColoresWallance.TextoPrincipal,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+            )
+            contenido()
+        }
+    }
+}
+
+/**
+ * Selector de fecha con el estilo de Wallance: muestra la fecha elegida y abre
+ * el calendario de Material 3 al tocarla.
+ */
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+fun SelectorFecha(
+    valor: Long,
+    onSeleccion: (Long) -> Unit,
+    etiqueta: String,
+    modifier: Modifier = Modifier,
+    habilitado: Boolean = true
+) {
+    var abierto by remember { mutableStateOf(false) }
+    val estadoCalendario = androidx.compose.material3.rememberDatePickerState(
+        initialSelectedDateMillis = valor
+    )
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(ColoresWallance.Tarjeta)
+            .clickable(enabled = habilitado) { abierto = true }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = etiqueta,
+                style = MaterialTheme.typography.labelMedium,
+                color = ColoresWallance.TextoSecundario
+            )
+            Text(
+                text = Utilidades.formatearFecha(valor),
+                style = MaterialTheme.typography.bodyLarge,
+                color = ColoresWallance.TextoPrincipal
+            )
+        }
+        Icon(
+            imageVector = Icons.Default.CalendarMonth,
+            contentDescription = "Elegir fecha",
+            tint = ColoresWallance.TextoSecundario
+        )
+    }
+
+    if (abierto) {
+        androidx.compose.material3.DatePickerDialog(
+            onDismissRequest = { abierto = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    estadoCalendario.selectedDateMillis?.let(onSeleccion)
+                    abierto = false
+                }) {
+                    Text("Aceptar", color = ColoresWallance.AmarilloPrincipal)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { abierto = false }) {
+                    Text("Cancelar", color = ColoresWallance.TextoSecundario)
+                }
+            }
+        ) {
+            androidx.compose.material3.DatePicker(
+                state = estadoCalendario,
+                colors = androidx.compose.material3.DatePickerDefaults.colors(
+                    containerColor = ColoresWallance.SuperficieElevada,
+                    titleContentColor = ColoresWallance.TextoPrincipal,
+                    headlineContentColor = ColoresWallance.TextoPrincipal,
+                    weekdayContentColor = ColoresWallance.TextoSecundario,
+                    dayContentColor = ColoresWallance.TextoPrincipal,
+                    selectedDayContainerColor = ColoresWallance.AmarilloPrincipal,
+                    selectedDayContentColor = ColoresWallance.NegroAmoled,
+                    todayDateBorderColor = ColoresWallance.AmarilloPrincipal,
+                    todayContentColor = ColoresWallance.AmarilloPrincipal
+                )
+            )
+        }
+    }
+}
+

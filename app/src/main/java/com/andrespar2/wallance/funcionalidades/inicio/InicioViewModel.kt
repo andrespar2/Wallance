@@ -10,9 +10,11 @@ import com.andrespar2.wallance.nucleo.basedatos.dao.MovimientoDao
 import com.andrespar2.wallance.nucleo.basedatos.dao.PrestamoDao
 import com.andrespar2.wallance.nucleo.basedatos.dao.PresupuestoDao
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Contacto
+import com.andrespar2.wallance.nucleo.basedatos.entidades.Aporte
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Cuota
 import com.andrespar2.wallance.nucleo.basedatos.entidades.EstadoCuota
 import com.andrespar2.wallance.nucleo.basedatos.entidades.EstadoPrestamo
+import com.andrespar2.wallance.nucleo.basedatos.entidades.MetaAhorro
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Movimiento
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Prestamo
 import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoPrestamo
@@ -49,6 +51,14 @@ data class VencimientoCercano(
     val prestamo: Prestamo,
     val cuota: Cuota,
     val contacto: Contacto?
+)
+
+/** Insumos reactivos con los que se arma el resumen del panel. */
+private data class InsumosPanel(
+    val movimientos: List<Movimiento>,
+    val prestamos: List<Prestamo>,
+    val metas: List<MetaAhorro>,
+    val aportes: List<Aporte>
 )
 
 /** Resumen financiero completo del panel principal. */
@@ -106,23 +116,24 @@ class InicioViewModel @Inject constructor(
                 movimientoDao.entreFechas(intervalo.inicio, intervalo.fin),
                 prestamoDao.prestamosActivos(),
                 presupuestoDao.activos(),
-                metaAhorroDao.todas()
-            ) { movimientos, prestamos, _, metas ->
-                Triple(movimientos, prestamos, metas)
+                metaAhorroDao.todas(),
+                metaAhorroDao.todosLosAportes()
+            ) { movimientos, prestamos, _, metas, aportes ->
+                InsumosPanel(movimientos, prestamos, metas, aportes)
             }
-                .map { (movimientos, prestamos, metas) ->
-                    construirResumen(intervalo, movimientos, prestamos, metas)
-                }
+                .map { insumos -> construirResumen(intervalo, insumos) }
                 .flowOn(Dispatchers.Default)
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private suspend fun construirResumen(
         intervalo: IntervaloFechas,
-        movimientos: List<Movimiento>,
-        prestamos: List<Prestamo>,
-        metas: List<com.andrespar2.wallance.nucleo.basedatos.entidades.MetaAhorro>
+        insumos: InsumosPanel
     ): ResumenPanel {
+        val movimientos = insumos.movimientos
+        val prestamos = insumos.prestamos
+        val metas = insumos.metas
+
         val ingresos = movimientos.filter { it.tipo.esIngreso }
             .fold(BigDecimal.ZERO) { total, m -> total.add(m.montoEnPrincipal ?: m.monto) }
             .redondearMonetario()
@@ -170,8 +181,15 @@ class InicioViewModel @Inject constructor(
 
         val presupuestos = estadoPresupuestos(intervalo)
 
+        val aportadoPorMeta = insumos.aportes
+            .groupBy { it.metaId }
+            .mapValues { (_, lista) ->
+                lista.fold(BigDecimal.ZERO) { total, aporte -> total.add(aporte.monto) }
+                    .redondearMonetario()
+            }
+
         val estadosMetas = metas.filter { it.activa }.take(3).map { meta ->
-            val aportado = metaAhorroDao.aportadoEnMetaSuspend(meta.id).redondearMonetario()
+            val aportado = aportadoPorMeta[meta.id] ?: BigDecimal.ZERO
             val pendiente = meta.montoObjetivo.subtract(aportado).coerceAtLeast(BigDecimal.ZERO)
             val porcentaje = if (meta.montoObjetivo.signum() > 0) {
                 aportado.multiply(BigDecimal(100))

@@ -68,6 +68,9 @@ interface MetaAhorroDao {
     @Query("SELECT * FROM aportes WHERE metaId = :metaId ORDER BY fecha DESC")
     fun aportesDeMeta(metaId: Long): Flow<List<Aporte>>
 
+    @Query("SELECT * FROM aportes ORDER BY fecha DESC")
+    fun todosLosAportes(): Flow<List<Aporte>>
+
     @Query("SELECT COALESCE(SUM(monto), 0) FROM aportes WHERE metaId = :metaId")
     fun aportadoEnMeta(metaId: Long): Flow<BigDecimal>
 

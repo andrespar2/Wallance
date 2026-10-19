@@ -10,8 +10,7 @@ import com.andrespar2.wallance.nucleo.basedatos.entidades.Presupuesto
 import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoMovimiento
 import com.andrespar2.wallance.nucleo.comun.Utilidades.redondearMonetario
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -52,22 +51,30 @@ class RepositorioPresupuestos @Inject constructor(
 
     suspend fun eliminar(presupuesto: Presupuesto) = presupuestoDao.eliminar(presupuesto)
 
-    /** Combina cada presupuesto con el gasto acumulado en su periodo. */
+    /**
+     * Combina cada presupuesto con el gasto acumulado en su periodo.
+     *
+     * Se observan también los movimientos para que el gasto mostrado se
+     * recalcule automáticamente al registrar o editar un movimiento.
+     */
     fun estados(inicioPeriodoGlobal: Long, finPeriodoGlobal: Long): Flow<List<EstadoPresupuesto>> =
-        presupuestoDao.activos().map { lista ->
-            lista.map { estadoDe(it, finPeriodoGlobal) }
+        combine(presupuestoDao.activos(), movimientoDao.todos()) { lista, movimientos ->
+            lista.map { estadoDe(it, finPeriodoGlobal, movimientos) }
         }
 
-    private suspend fun estadoDe(presupuesto: Presupuesto, finGlobal: Long): EstadoPresupuesto {
+    private fun estadoDe(
+        presupuesto: Presupuesto,
+        finGlobal: Long,
+        movimientos: List<Movimiento>
+    ): EstadoPresupuesto {
         val inicio = presupuesto.fechaInicio
         val fin = presupuesto.fechaFin ?: finGlobal
-        val gastado = when {
-            presupuesto.categoriaId != null ->
-                movimientoDao.gastoEnCategoria(presupuesto.categoriaId, inicio, fin)
-            presupuesto.cuentaId != null ->
-                movimientoDao.gastoEnCuenta(presupuesto.cuentaId, inicio, fin)
-            else -> totalGastoEntre(inicio, fin)
-        }.redondearMonetario()
+        val gastado = movimientos.asSequence()
+            .filter { it.fecha in inicio..fin && afecta(presupuesto, it) }
+            .fold(BigDecimal.ZERO) { total, movimiento ->
+                total.add(movimiento.montoEnPrincipal ?: movimiento.monto)
+            }
+            .redondearMonetario()
 
         val disponible = presupuesto.monto.subtract(gastado).redondearMonetario()
         val porcentaje = if (presupuesto.monto.signum() > 0) {
@@ -79,14 +86,17 @@ class RepositorioPresupuestos @Inject constructor(
         return EstadoPresupuesto(presupuesto, gastado, disponible, porcentaje)
     }
 
-    private suspend fun totalGastoEntre(inicio: Long, fin: Long): BigDecimal =
-        movimientoDao.entreFechas(inicio, fin).first().fold(BigDecimal.ZERO) { total, movimiento ->
-            if (movimiento.tipo == TipoMovimiento.GASTO || movimiento.tipo == TipoMovimiento.COMISION) {
-                total.add(movimiento.montoEnPrincipal ?: movimiento.monto)
-            } else {
-                total
-            }
-        }
+    /** Determina si un movimiento cuenta como gasto del presupuesto indicado. */
+    private fun afecta(presupuesto: Presupuesto, movimiento: Movimiento): Boolean = when {
+        presupuesto.categoriaId != null ->
+            movimiento.tipo == TipoMovimiento.GASTO &&
+                movimiento.categoriaId == presupuesto.categoriaId
+        presupuesto.cuentaId != null ->
+            movimiento.tipo == TipoMovimiento.GASTO &&
+                movimiento.cuentaId == presupuesto.cuentaId
+        else ->
+            movimiento.tipo == TipoMovimiento.GASTO || movimiento.tipo == TipoMovimiento.COMISION
+    }
 }
 
 @Singleton
@@ -98,6 +108,20 @@ class RepositorioAhorros @Inject constructor(
     fun metas(): Flow<List<MetaAhorro>> = metaAhorroDao.todas()
 
     fun aportesDe(metaId: Long): Flow<List<Aporte>> = metaAhorroDao.aportesDeMeta(metaId)
+
+    /**
+     * Flujo con todos los aportes registrados. Permite recalcular el progreso
+     * de las metas de forma reactiva: al insertar un aporte la tabla cambia y
+     * el flujo emite de nuevo aunque la meta en sí no se haya modificado.
+     */
+    fun todosLosAportes(): Flow<List<Aporte>> = metaAhorroDao.todosLosAportes()
+
+    /** Suma de aportes por meta, indexada por el identificador de la meta. */
+    fun sumarAportesPorMeta(aportes: List<Aporte>): Map<Long, BigDecimal> =
+        aportes.groupBy { it.metaId }.mapValues { (_, lista) ->
+            lista.fold(BigDecimal.ZERO) { total, aporte -> total.add(aporte.monto) }
+                .redondearMonetario()
+        }
 
     suspend fun metaPorId(id: Long): MetaAhorro? = metaAhorroDao.metaPorId(id)
 
@@ -157,15 +181,19 @@ class RepositorioAhorros @Inject constructor(
 
     fun aportadoEn(metaId: Long): Flow<BigDecimal> = metaAhorroDao.aportadoEnMeta(metaId)
 
-    suspend fun estadoDe(meta: MetaAhorro): EstadoMeta {
-        val aportado = metaAhorroDao.aportadoEnMetaSuspend(meta.id).redondearMonetario()
-        val pendiente = meta.montoObjetivo.subtract(aportado).coerceAtLeast(BigDecimal.ZERO)
+    suspend fun estadoDe(meta: MetaAhorro): EstadoMeta =
+        estadoDe(meta, metaAhorroDao.aportadoEnMetaSuspend(meta.id))
+
+    /** Calcula el estado de una meta a partir de un total ya conocido. */
+    fun estadoDe(meta: MetaAhorro, aportado: BigDecimal): EstadoMeta {
+        val aportadoRedondeado = aportado.redondearMonetario()
+        val pendiente = meta.montoObjetivo.subtract(aportadoRedondeado).coerceAtLeast(BigDecimal.ZERO)
         val porcentaje = if (meta.montoObjetivo.signum() > 0) {
-            aportado.multiply(BigDecimal(100))
+            aportadoRedondeado.multiply(BigDecimal(100))
                 .divide(meta.montoObjetivo, 2, java.math.RoundingMode.HALF_UP)
         } else {
             BigDecimal.ZERO
         }
-        return EstadoMeta(meta, aportado, pendiente, porcentaje)
+        return EstadoMeta(meta, aportadoRedondeado, pendiente, porcentaje)
     }
 }

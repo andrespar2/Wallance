@@ -31,11 +31,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.andrespar2.wallance.funcionalidades.ahorros.PantallaAhorros
 import com.andrespar2.wallance.funcionalidades.bienvenida.PantallaBienvenida
+import com.andrespar2.wallance.funcionalidades.categorias.PantallaCategorias
 import com.andrespar2.wallance.funcionalidades.comun.PantallaEnConstruccion
+import com.andrespar2.wallance.funcionalidades.configuracion.PantallaConfiguracion
+import com.andrespar2.wallance.funcionalidades.cuentas.PantallaCuentas
+import com.andrespar2.wallance.funcionalidades.divisas.PantallaDivisas
 import com.andrespar2.wallance.funcionalidades.inicio.PantallaInicio
 import com.andrespar2.wallance.funcionalidades.movimientos.PantallaFormularioMovimiento
 import com.andrespar2.wallance.funcionalidades.movimientos.PantallaMovimientos
+import com.andrespar2.wallance.funcionalidades.presupuestos.PantallaPresupuestos
+import com.andrespar2.wallance.funcionalidades.suscripciones.PantallaSuscripciones
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
 import com.andrespar2.wallance.sesion.SesionViewModel
 
@@ -54,6 +61,19 @@ private val DestinosBarra = listOf(
     DestinoBarra(Rutas.CONFIGURACION, "Configuración", Icons.Default.Settings)
 )
 
+/** Rutas que se muestran a pantalla completa, sin la barra inferior. */
+private val RutasSinBarra = setOf(
+    Rutas.BIENVENIDA,
+    Rutas.RUTA_MOVIMIENTO_FORM,
+    Rutas.MOVIMIENTO_FORM,
+    Rutas.CUENTAS,
+    Rutas.CATEGORIAS,
+    Rutas.PRESUPUESTOS,
+    Rutas.AHORROS,
+    Rutas.DIVISAS,
+    Rutas.SUSCRIPCIONES
+)
+
 /**
  * Grafo de navegación completo de Wallance: pantalla de bienvenida, las cinco
  * secciones principales y el formulario de movimientos.
@@ -69,10 +89,7 @@ fun NavegacionWallance(
     val consentimientoPublicidad by sesion.consentimientoPublicidad.collectAsStateWithLifecycle()
 
     val rutaActual = navController.currentBackStackEntryAsState().value?.destination?.route
-    val mostrarBarra = rutaActual != null &&
-        rutaActual != Rutas.BIENVENIDA &&
-        rutaActual != Rutas.RUTA_MOVIMIENTO_FORM &&
-        rutaActual != Rutas.MOVIMIENTO_FORM
+    val mostrarBarra = rutaActual != null && rutaActual !in RutasSinBarra
 
     Scaffold(
         containerColor = ColoresWallance.NegroAmoled,
@@ -199,10 +216,34 @@ fun NavegacionWallance(
                 }
 
                 composable(Rutas.CONFIGURACION) {
-                    PantallaEnConstruccion(
-                        titulo = "Configuración",
-                        detalle = "Las opciones de la aplicación están en construcción."
+                    PantallaConfiguracion(
+                        onIrA = { ruta -> navController.navigate(ruta) },
+                        monedaPrincipal = monedaPrincipal
                     )
+                }
+
+                composable(Rutas.CUENTAS) {
+                    PantallaCuentas(onVolver = { navController.popBackStack() })
+                }
+
+                composable(Rutas.CATEGORIAS) {
+                    PantallaCategorias(onVolver = { navController.popBackStack() })
+                }
+
+                composable(Rutas.PRESUPUESTOS) {
+                    PantallaPresupuestos(onVolver = { navController.popBackStack() })
+                }
+
+                composable(Rutas.AHORROS) {
+                    PantallaAhorros(onVolver = { navController.popBackStack() })
+                }
+
+                composable(Rutas.DIVISAS) {
+                    PantallaDivisas(onVolver = { navController.popBackStack() })
+                }
+
+                composable(Rutas.SUSCRIPCIONES) {
+                    PantallaSuscripciones(onVolver = { navController.popBackStack() })
                 }
             }
         }
