@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.andrespar2.wallance.BuildConfig
 import com.andrespar2.wallance.nucleo.diseno.TemaWallance
 import com.andrespar2.wallance.nucleo.navegacion.NavegacionWallance
 import com.andrespar2.wallance.sesion.SesionViewModel
@@ -36,7 +37,11 @@ class ActividadPrincipal : ComponentActivity() {
 @Composable
 private fun ContenidoRaiz(sesion: SesionViewModel = hiltViewModel()) {
     val consentimiento by sesion.consentimientoPublicidad.collectAsStateWithLifecycle()
-    val modoPrueba by sesion.modoPruebaPublicidad.collectAsStateWithLifecycle()
+    val preferenciaModoPrueba by sesion.modoPruebaPublicidad.collectAsStateWithLifecycle()
+
+    // El modo de prueba del SDK solo se activa en compilaciones de depuración:
+    // la versión de producción siempre solicita anuncios reales.
+    val modoPrueba = BuildConfig.DEBUG && preferenciaModoPrueba
 
     androidx.compose.runtime.LaunchedEffect(consentimiento, modoPrueba) {
         com.andrespar2.wallance.nucleo.publicidad.ControladorPublicidad.fijarModoPrueba(modoPrueba)
