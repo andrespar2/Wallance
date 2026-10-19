@@ -2,6 +2,7 @@ package com.andrespar2.wallance.nucleo.navegacion
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -46,6 +47,7 @@ import com.andrespar2.wallance.funcionalidades.presupuestos.PantallaPresupuestos
 import com.andrespar2.wallance.funcionalidades.prestamos.PantallaPrestamos
 import com.andrespar2.wallance.funcionalidades.suscripciones.PantallaSuscripciones
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
+import com.andrespar2.wallance.nucleo.publicidad.BannerPublicidad
 import com.andrespar2.wallance.sesion.SesionViewModel
 
 /** Elemento de la barra de navegación inferior. */
@@ -96,31 +98,39 @@ fun NavegacionWallance(
         containerColor = ColoresWallance.NegroAmoled,
         bottomBar = {
             if (mostrarBarra) {
-                NavigationBar(containerColor = ColoresWallance.NegroSecundario) {
-                    DestinosBarra.forEach { destino ->
-                        NavigationBarItem(
-                            selected = rutaActual == destino.ruta,
-                            onClick = {
-                                if (rutaActual != destino.ruta) {
-                                    navController.navigate(destino.ruta) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
+                Column {
+                    // Banner publicitario de la pantalla de inicio: siempre
+                    // visible sobre la barra inferior. No se muestra en
+                    // formularios ni en pantallas sensibles.
+                    if (rutaActual == Rutas.INICIO) {
+                        BannerPublicidad()
+                    }
+                    NavigationBar(containerColor = ColoresWallance.NegroSecundario) {
+                        DestinosBarra.forEach { destino ->
+                            NavigationBarItem(
+                                selected = rutaActual == destino.ruta,
+                                onClick = {
+                                    if (rutaActual != destino.ruta) {
+                                        navController.navigate(destino.ruta) {
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
                                         }
-                                        launchSingleTop = true
-                                        restoreState = true
                                     }
-                                }
-                            },
-                            icon = { Icon(destino.icono, contentDescription = destino.etiqueta) },
-                            label = { Text(destino.etiqueta) },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = ColoresWallance.NegroAmoled,
-                                selectedTextColor = ColoresWallance.AmarilloPrincipal,
-                                indicatorColor = ColoresWallance.AmarilloPrincipal,
-                                unselectedIconColor = ColoresWallance.TextoSecundario,
-                                unselectedTextColor = ColoresWallance.TextoSecundario
+                                },
+                                icon = { Icon(destino.icono, contentDescription = destino.etiqueta) },
+                                label = { Text(destino.etiqueta) },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = ColoresWallance.NegroAmoled,
+                                    selectedTextColor = ColoresWallance.AmarilloPrincipal,
+                                    indicatorColor = ColoresWallance.AmarilloPrincipal,
+                                    unselectedIconColor = ColoresWallance.TextoSecundario,
+                                    unselectedTextColor = ColoresWallance.TextoSecundario
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }

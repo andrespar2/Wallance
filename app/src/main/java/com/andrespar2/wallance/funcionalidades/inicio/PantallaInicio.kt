@@ -43,7 +43,6 @@ import com.andrespar2.wallance.nucleo.comun.Utilidades
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
 import com.andrespar2.wallance.nucleo.diseno.componentes.EstadoVacio
 import com.andrespar2.wallance.nucleo.diseno.componentes.TarjetaWallance
-import com.andrespar2.wallance.nucleo.publicidad.BannerPublicidad
 
 /**
  * Panel principal de finanzas de Wallance.
@@ -421,10 +420,6 @@ fun PantallaInicio(
                     }
                 }
             }
-        }
-
-        item {
-            BannerPublicidad()
         }
 
         item { Spacer(modifier = Modifier.height(72.dp)) }
