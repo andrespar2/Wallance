@@ -4,6 +4,7 @@ import com.andrespar2.wallance.nucleo.basedatos.dao.CategoriaDao
 import com.andrespar2.wallance.nucleo.basedatos.dao.CuentaDao
 import com.andrespar2.wallance.nucleo.basedatos.dao.PrestamoDao
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Categoria
+import com.andrespar2.wallance.nucleo.basedatos.entidades.Cuota
 import com.andrespar2.wallance.nucleo.basedatos.entidades.EstadoCuota
 import com.andrespar2.wallance.nucleo.basedatos.entidades.EstadoPrestamo
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Movimiento
@@ -46,6 +47,14 @@ class RepositorioPrestamos @Inject constructor(
 ) {
 
     fun todos(): Flow<List<Prestamo>> = prestamoDao.todosLosPrestamos()
+
+    suspend fun todosSuspend(): List<Prestamo> = prestamoDao.todosLosPrestamosSuspend()
+
+    suspend fun cuotasDeSuspend(prestamoId: Long): List<Cuota> =
+        prestamoDao.cuotasDePrestamoSuspend(prestamoId)
+
+    suspend fun pagosDeSuspend(prestamoId: Long): List<Pago> =
+        prestamoDao.pagosDePrestamoSuspend(prestamoId)
 
     fun activos(): Flow<List<Prestamo>> = prestamoDao.prestamosActivos()
 

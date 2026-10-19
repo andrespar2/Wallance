@@ -42,5 +42,11 @@ private fun ContenidoRaiz(sesion: SesionViewModel = hiltViewModel()) {
         com.andrespar2.wallance.nucleo.publicidad.ControladorPublicidad.fijarModoPrueba(modoPrueba)
     }
 
+    // Siembra el catálogo de categorías si la base de datos está vacía
+    // (primera ejecución o restauración). Es idempotente.
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        sesion.prepararCatalogoInicial()
+    }
+
     NavegacionWallance(sesion = sesion)
 }

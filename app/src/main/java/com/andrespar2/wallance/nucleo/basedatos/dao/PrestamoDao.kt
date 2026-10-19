@@ -46,6 +46,9 @@ interface PrestamoDao {
     @Query("SELECT * FROM prestamos ORDER BY fechaCreacion DESC")
     fun todosLosPrestamos(): Flow<List<Prestamo>>
 
+    @Query("SELECT * FROM prestamos ORDER BY fechaCreacion DESC")
+    suspend fun todosLosPrestamosSuspend(): List<Prestamo>
+
     @Query("SELECT * FROM prestamos WHERE estado = :estado ORDER BY fechaVencimiento ASC")
     suspend fun prestamosPorEstado(estado: EstadoPrestamo): List<Prestamo>
 

@@ -33,6 +33,7 @@ object ModuloBaseDatos {
             BaseDatosWallance::class.java,
             BaseDatosWallance.NOMBRE
         )
+            .fallbackToDestructiveMigration()
             .build()
 
     @Provides

@@ -99,6 +99,16 @@ data class Contacto(
     val correo: String = "",
     val fotoUri: String = "",
     val notas: String = "",
+    /** Relación financiera habitual con este contacto. */
+    val tipoRelacion: TipoRelacionContacto = TipoRelacionContacto.AMBOS,
+    /** Indica si este contacto opera con interés (condiciones preferentes). */
+    val aplicaInteres: Boolean = true,
+    /** Porcentaje de interés preferente (decimal con punto, ej. "5.5"). */
+    val porcentajeInteresSugerido: String = "0",
+    /** Indica si las operaciones con este contacto devengan mora. */
+    val tieneMora: Boolean = false,
+    /** Porcentaje de mora diaria preferente (decimal con punto, ej. "0.05"). */
+    val porcentajeMoraSugerido: String = "0",
     val fechaCreacion: Long = System.currentTimeMillis()
 ) {
     /** Nombre completo para mostrar. */

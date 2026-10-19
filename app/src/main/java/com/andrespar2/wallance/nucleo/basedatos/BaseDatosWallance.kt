@@ -46,7 +46,7 @@ import com.andrespar2.wallance.nucleo.basedatos.entidades.Suscripcion
         Suscripcion::class,
         Cotizacion::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(ConvertidoresRoom::class)

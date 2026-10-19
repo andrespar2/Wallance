@@ -13,6 +13,7 @@ import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoMovimiento
 import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoPago
 import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoPeriodoPresupuesto
 import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoPrestamo
+import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoRelacionContacto
 
 /**
  * Etiquetas en español para los tipos del dominio financiero.
@@ -68,6 +69,13 @@ val TipoPrestamo.etiqueta: String
     get() = when (this) {
         TipoPrestamo.OTORGADO -> "Presté dinero"
         TipoPrestamo.RECIBIDO -> "Recibí un préstamo"
+    }
+
+val TipoRelacionContacto.etiqueta: String
+    get() = when (this) {
+        TipoRelacionContacto.PRESTAMISTA -> "Le presto dinero"
+        TipoRelacionContacto.TOMADOR -> "Me presta dinero"
+        TipoRelacionContacto.AMBOS -> "Ambas cosas"
     }
 
 val TipoInteres.etiqueta: String

@@ -36,12 +36,14 @@ import com.andrespar2.wallance.funcionalidades.bienvenida.PantallaBienvenida
 import com.andrespar2.wallance.funcionalidades.categorias.PantallaCategorias
 import com.andrespar2.wallance.funcionalidades.comun.PantallaEnConstruccion
 import com.andrespar2.wallance.funcionalidades.configuracion.PantallaConfiguracion
+import com.andrespar2.wallance.funcionalidades.estadisticas.PantallaEstadisticas
 import com.andrespar2.wallance.funcionalidades.cuentas.PantallaCuentas
 import com.andrespar2.wallance.funcionalidades.divisas.PantallaDivisas
 import com.andrespar2.wallance.funcionalidades.inicio.PantallaInicio
 import com.andrespar2.wallance.funcionalidades.movimientos.PantallaFormularioMovimiento
 import com.andrespar2.wallance.funcionalidades.movimientos.PantallaMovimientos
 import com.andrespar2.wallance.funcionalidades.presupuestos.PantallaPresupuestos
+import com.andrespar2.wallance.funcionalidades.prestamos.PantallaPrestamos
 import com.andrespar2.wallance.funcionalidades.suscripciones.PantallaSuscripciones
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
 import com.andrespar2.wallance.sesion.SesionViewModel
@@ -86,7 +88,6 @@ fun NavegacionWallance(
     val configuracionCompletada by sesion.configuracionCompletada.collectAsStateWithLifecycle()
     val monedaPrincipal by sesion.monedaPrincipal.collectAsStateWithLifecycle()
     val ocultarMontos by sesion.ocultarMontos.collectAsStateWithLifecycle()
-    val consentimientoPublicidad by sesion.consentimientoPublicidad.collectAsStateWithLifecycle()
 
     val rutaActual = navController.currentBackStackEntryAsState().value?.destination?.route
     val mostrarBarra = rutaActual != null && rutaActual !in RutasSinBarra
@@ -161,7 +162,6 @@ fun NavegacionWallance(
                     PantallaInicio(
                         moneda = monedaPrincipal,
                         ocultarMontos = ocultarMontos,
-                        consentimientoPublicidad = consentimientoPublicidad,
                         onRegistrarMovimiento = { navController.navigate(Rutas.movimientoForm()) },
                         onVerMovimientos = { navController.navigate(Rutas.MOVIMIENTOS) },
                         onVerPrestamos = { navController.navigate(Rutas.PRESTAMOS) }
@@ -201,17 +201,14 @@ fun NavegacionWallance(
                 }
 
                 composable(Rutas.PRESTAMOS) {
-                    PantallaEnConstruccion(
-                        titulo = "Préstamos",
-                        detalle = "El módulo de préstamos está en construcción. Aquí gestionarás " +
-                            "contactos, cuotas, abonos e intereses."
+                    PantallaPrestamos(
+                        onVolver = { navController.popBackStack() }
                     )
                 }
 
                 composable(Rutas.ESTADISTICAS) {
-                    PantallaEnConstruccion(
-                        titulo = "Estadísticas",
-                        detalle = "Los reportes y gráficos de tus finanzas están en construcción."
+                    PantallaEstadisticas(
+                        onVolver = { navController.popBackStack() }
                     )
                 }
 

@@ -54,6 +54,11 @@ enum class TipoCuenta {
 /** Dirección de un préstamo personal. */
 enum class TipoPrestamo { OTORGADO, RECIBIDO }
 
+/**
+ * Relación financiera con un contacto: si le prestamos, nos presta, o ambas.
+ */
+enum class TipoRelacionContacto { PRESTAMISTA, TOMADOR, AMBOS }
+
 /** Modalidad de interés aplicada a un préstamo. */
 enum class TipoInteres {
     SIN_INTERES,
