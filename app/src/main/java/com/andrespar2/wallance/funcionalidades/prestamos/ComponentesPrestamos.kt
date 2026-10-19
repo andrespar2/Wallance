@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Contacto
 import com.andrespar2.wallance.nucleo.basedatos.entidades.Cuota
@@ -82,6 +83,8 @@ fun TarjetaPrestamo(
                     text = item.contacto?.nombreCompleto ?: "Contacto eliminado",
                     style = MaterialTheme.typography.titleMedium,
                     color = ColoresWallance.TextoPrincipal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
@@ -407,7 +410,8 @@ private fun FilaInterruptorSimple(
         Text(
             text = texto,
             style = MaterialTheme.typography.bodyLarge,
-            color = ColoresWallance.TextoPrincipal
+            color = ColoresWallance.TextoPrincipal,
+            modifier = Modifier.weight(1f)
         )
         androidx.compose.material3.Switch(
             checked = activo,

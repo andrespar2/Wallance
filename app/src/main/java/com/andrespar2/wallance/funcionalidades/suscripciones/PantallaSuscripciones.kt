@@ -111,7 +111,12 @@ fun PantallaSuscripciones(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        top = 16.dp,
+                        end = 16.dp,
+                        bottom = 96.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     item {
@@ -244,7 +249,8 @@ private fun TarjetaSuscripcion(
                 Text(
                     text = suscripcion.estado.etiqueta,
                     style = MaterialTheme.typography.labelMedium,
-                    color = colorEstado
+                    color = colorEstado,
+                    modifier = Modifier.weight(1f)
                 )
                 Row {
                     Text(

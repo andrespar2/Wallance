@@ -3,6 +3,7 @@ package com.andrespar2.wallance.nucleo.navegacion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -151,6 +152,10 @@ fun NavegacionWallance(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(relleno)
+                // El Scaffold ya aplica el espacio de las barras del sistema;
+                // se marca como consumido para que las pantallas con su propia
+                // barra superior no lo vuelvan a sumar (dejaba un hueco arriba).
+                .consumeWindowInsets(relleno)
                 .background(ColoresWallance.NegroAmoled)
         ) {
             NavHost(

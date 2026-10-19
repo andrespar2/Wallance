@@ -42,6 +42,7 @@ import com.andrespar2.wallance.nucleo.basedatos.entidades.esIngreso
 import com.andrespar2.wallance.nucleo.comun.Utilidades
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
 import com.andrespar2.wallance.nucleo.diseno.componentes.EstadoVacio
+import com.andrespar2.wallance.nucleo.diseno.componentes.GrupoOpciones
 import com.andrespar2.wallance.nucleo.diseno.componentes.TarjetaWallance
 
 /**
@@ -87,10 +88,7 @@ fun PantallaInicio(
 
         // Filtros de periodo.
         item {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            GrupoOpciones {
                 RangoPeriodo.entries.filter { it != RangoPeriodo.PERSONALIZADO }.forEach { periodo ->
                     val activo = viewModel.periodoSeleccionado == periodo
                     Box(
@@ -268,7 +266,10 @@ fun PantallaInicio(
                                     Text(
                                         text = estado.presupuesto.nombre,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = ColoresWallance.TextoPrincipal
+                                        color = ColoresWallance.TextoPrincipal,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
                                     )
                                     Text(
                                         text = if (ocultarMontos) "••••"
@@ -276,7 +277,9 @@ fun PantallaInicio(
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = if (estado.porcentajeConsumido >= java.math.BigDecimal(100))
                                             ColoresWallance.RojoPerdida
-                                        else ColoresWallance.TextoSecundario
+                                        else ColoresWallance.TextoSecundario,
+                                        maxLines = 1,
+                                        modifier = Modifier.padding(start = 12.dp)
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -323,12 +326,17 @@ fun PantallaInicio(
                                     Text(
                                         text = estado.meta.nombre,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = ColoresWallance.TextoPrincipal
+                                        color = ColoresWallance.TextoPrincipal,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
                                     )
                                     Text(
                                         text = if (ocultarMontos) "••••" else "${estado.porcentaje} %",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = ColoresWallance.VerdeGanancia
+                                        color = ColoresWallance.VerdeGanancia,
+                                        maxLines = 1,
+                                        modifier = Modifier.padding(start = 12.dp)
                                     )
                                 }
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -363,12 +371,16 @@ fun PantallaInicio(
                 Text(
                     text = "Últimos movimientos",
                     style = MaterialTheme.typography.titleMedium,
-                    color = ColoresWallance.TextoPrincipal
+                    color = ColoresWallance.TextoPrincipal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = "Ver todos",
                     style = MaterialTheme.typography.labelMedium,
                     color = ColoresWallance.AmarilloPrincipal,
+                    maxLines = 1,
                     modifier = Modifier.clickable { onVerMovimientos() }
                 )
             }
@@ -462,7 +474,7 @@ private fun FilaResumen(
             .padding(vertical = 3.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(etiqueta, style = MaterialTheme.typography.bodyMedium, color = ColoresWallance.TextoSecundario)
-        Text(valor, style = MaterialTheme.typography.bodyLarge, color = colorValor, maxLines = 1)
+        Text(etiqueta, style = MaterialTheme.typography.bodyMedium, color = ColoresWallance.TextoSecundario, modifier = Modifier.weight(1f))
+        Text(valor, style = MaterialTheme.typography.bodyLarge, color = colorValor, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(start = 12.dp))
     }
 }

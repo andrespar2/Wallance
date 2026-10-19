@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -118,7 +119,12 @@ fun PantallaPresupuestos(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
+                    contentPadding = PaddingValues(
+                        start = 16.dp,
+                        top = 16.dp,
+                        end = 16.dp,
+                        bottom = 96.dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(estado.presupuestos, key = { it.presupuesto.id }) { item ->
@@ -219,12 +225,17 @@ private fun TarjetaPresupuesto(
                 Text(
                     text = "Gastado ${Utilidades.formatearDinero(item.gastado, presupuesto.moneda)}",
                     style = MaterialTheme.typography.labelMedium,
-                    color = ColoresWallance.TextoSecundario
+                    color = ColoresWallance.TextoSecundario,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = "de ${Utilidades.formatearDinero(presupuesto.monto, presupuesto.moneda)}",
                     style = MaterialTheme.typography.labelMedium,
-                    color = ColoresWallance.TextoPrincipal
+                    color = ColoresWallance.TextoPrincipal,
+                    maxLines = 1,
+                    modifier = Modifier.padding(start = 12.dp)
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -236,7 +247,10 @@ private fun TarjetaPresupuesto(
                         "Excedido ${Utilidades.formatearDinero(item.disponible.abs(), presupuesto.moneda)}"
                     },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = colorBarra
+                    color = colorBarra,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 Row {
                     Text(

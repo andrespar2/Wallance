@@ -70,6 +70,7 @@ import com.andrespar2.wallance.nucleo.diseno.componentes.Cargando
 import com.andrespar2.wallance.nucleo.diseno.componentes.DialogoConfirmacion
 import com.andrespar2.wallance.nucleo.diseno.componentes.EstadoVacio
 import com.andrespar2.wallance.nucleo.diseno.componentes.FilaDato
+import com.andrespar2.wallance.nucleo.diseno.componentes.GrupoOpciones
 import com.andrespar2.wallance.nucleo.diseno.componentes.ModalBottomSheetFlujo
 import com.andrespar2.wallance.nucleo.diseno.componentes.Separator
 import com.andrespar2.wallance.nucleo.diseno.componentes.SelectorFecha
@@ -170,7 +171,12 @@ fun PantallaPrestamos(
                         LazyColumn(
                             state = listaState,
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(16.dp),
+                            contentPadding = PaddingValues(
+                                start = 16.dp,
+                                top = 16.dp,
+                                end = 16.dp,
+                                bottom = 96.dp
+                            ),
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             items(estado.prestamos, key = { it.prestamo.id }) { item ->
@@ -269,11 +275,8 @@ private fun FilaFiltros(filtro: FiltroPrestamos, onCambio: (FiltroPrestamos) -> 
         FiltroPrestamos.VENCIDOS to "Vencidos",
         FiltroPrestamos.PAGADOS to "Pagados"
     )
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    GrupoOpciones(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         filtros.forEach { (valor, texto) ->
             FilterChip(

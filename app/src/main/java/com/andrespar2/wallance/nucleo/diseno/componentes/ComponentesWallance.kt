@@ -7,8 +7,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -44,6 +47,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.andrespar2.wallance.nucleo.comun.Utilidades
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
@@ -59,7 +63,10 @@ fun TarjetaWallance(
     modifier: Modifier = Modifier,
     contenido: @Composable () -> Unit
 ) {
-    Box(
+    // Se usa Column (no Box) para que los elementos de la tarjeta se apilen
+    // uno debajo de otro. Con Box se superpondrían entre sí cuando la tarjeta
+    // recibe más de un elemento (por ejemplo, el título y el monto).
+    Column(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
             .background(ColoresWallance.Tarjeta)
@@ -83,7 +90,7 @@ fun BotonWallance(
     Button(
         onClick = onClick,
         enabled = habilitado && !cargando,
-        modifier = modifier.height(48.dp),
+        modifier = modifier.defaultMinSize(minHeight = 48.dp),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorFondo,
@@ -119,7 +126,7 @@ fun BotonSecundario(
     OutlinedButton(
         onClick = onClick,
         enabled = habilitado,
-        modifier = modifier.height(48.dp),
+        modifier = modifier.defaultMinSize(minHeight = 48.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         if (icono != null) {
@@ -138,7 +145,7 @@ fun BotonPeligro(
 ) {
     OutlinedButton(
         onClick = onClick,
-        modifier = modifier.height(48.dp),
+        modifier = modifier.defaultMinSize(minHeight = 48.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Text(texto, style = MaterialTheme.typography.labelLarge, color = ColoresWallance.RojoPerdida)
@@ -233,7 +240,8 @@ fun FilaDato(
         Text(
             text = etiqueta,
             style = MaterialTheme.typography.bodyMedium,
-            color = ColoresWallance.TextoSecundario
+            color = ColoresWallance.TextoSecundario,
+            modifier = Modifier.weight(1f)
         )
         Text(
             text = valor,
@@ -385,6 +393,29 @@ fun Separator(modifier: Modifier = Modifier) {
             .height(1.dp)
             .background(ColoresWallance.BordeSutil)
     )
+}
+
+/**
+ * Grupo de opciones (chips) que se acomoda al ancho disponible.
+ *
+ * Si las opciones no caben en una sola línea, continúan en la siguiente, de
+ * modo que ningún texto se superpone, se recorta ni se comprime en pantallas
+ * pequeñas.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun GrupoOpciones(
+    modifier: Modifier = Modifier,
+    espaciado: Dp = 8.dp,
+    contenido: @Composable () -> Unit
+) {
+    FlowRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(espaciado),
+        verticalArrangement = Arrangement.spacedBy(espaciado)
+    ) {
+        contenido()
+    }
 }
 
 /**

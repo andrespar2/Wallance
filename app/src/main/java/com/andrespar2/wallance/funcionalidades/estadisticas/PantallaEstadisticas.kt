@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,6 +51,7 @@ import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
 import com.andrespar2.wallance.nucleo.diseno.componentes.Cargando
 import com.andrespar2.wallance.nucleo.diseno.componentes.EstadoVacio
 import com.andrespar2.wallance.nucleo.diseno.componentes.FilaDato
+import com.andrespar2.wallance.nucleo.diseno.componentes.GrupoOpciones
 import com.andrespar2.wallance.nucleo.diseno.componentes.Separator
 import com.andrespar2.wallance.nucleo.diseno.componentes.TarjetaWallance
 import java.math.BigDecimal
@@ -145,10 +147,7 @@ fun PantallaEstadisticas(
 
 @Composable
 private fun FilaPeriodos(periodo: PeriodoEstadistica, onCambio: (PeriodoEstadistica) -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+    GrupoOpciones {
         PeriodoEstadistica.entries.forEach { opcion ->
             FilterChip(
                 selected = periodo == opcion,
@@ -339,6 +338,8 @@ private fun LeyendaCategorias(categorias: List<ParteCategoria>, moneda: String) 
                     text = parte.categoria?.nombre ?: "Sin categoría",
                     style = MaterialTheme.typography.bodyMedium,
                     color = ColoresWallance.TextoPrincipal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
                 Text(

@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -86,12 +87,16 @@ fun PantallaMovimientos(
                 Text(
                     text = "Movimientos",
                     style = MaterialTheme.typography.titleLarge,
-                    color = ColoresWallance.TextoPrincipal
+                    color = ColoresWallance.TextoPrincipal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = if (viewModel.soloPrestamos) "Ver todos" else "Solo préstamos",
                     style = MaterialTheme.typography.labelMedium,
                     color = ColoresWallance.AmarilloPrincipal,
+                    maxLines = 1,
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable { viewModel.alternarSoloPrestamos() }
