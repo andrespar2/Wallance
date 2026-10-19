@@ -10,7 +10,7 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
-# Start.io: se conservan las clases del SDK para que no las elimine R8.
+# SDK de publicidad: se conservan sus clases para que R8 no las elimine.
 -keep class com.startapp.** { *; }
 -dontwarn com.startapp.**
 

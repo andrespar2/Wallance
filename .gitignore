@@ -10,6 +10,7 @@ build/
 .cxx
 local.properties
 build.log
+build-release.log
 ui.xml
 wallance.db
 wallance.db-wal
