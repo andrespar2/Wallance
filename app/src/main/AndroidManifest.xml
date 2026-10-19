@@ -21,11 +21,6 @@
         android:usesCleartextTraffic="false"
         tools:targetApi="35">
 
-        <!-- Identificador de aplicación Start.io -->
-        <meta-data
-            android:name="com.startapp.sdk.APPLICATION_ID"
-            android:value="209590896" />
-
         <activity
             android:name=".actividad.ActividadPrincipal"
             android:exported="true"

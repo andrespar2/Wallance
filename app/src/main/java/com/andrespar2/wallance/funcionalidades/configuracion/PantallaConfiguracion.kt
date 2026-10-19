@@ -16,7 +16,6 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.Savings
@@ -53,8 +52,6 @@ fun PantallaConfiguracion(
 ) {
     val ocultarMontos by viewModel.ocultarMontos.collectAsStateWithLifecycle()
     val notificaciones by viewModel.notificacionesHabilitadas.collectAsStateWithLifecycle()
-    val consentimiento by viewModel.consentimientoPublicidad.collectAsStateWithLifecycle()
-    val modoPrueba by viewModel.modoPruebaPublicidad.collectAsStateWithLifecycle()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -131,35 +128,6 @@ fun PantallaConfiguracion(
                         icono = Icons.Default.Notifications,
                         activo = notificaciones,
                         onCambio = viewModel::fijarNotificaciones
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        item {
-            Text(
-                text = "Publicidad",
-                style = MaterialTheme.typography.labelLarge,
-                color = ColoresWallance.AmarilloPrincipal
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TarjetaWallance(modifier = Modifier.fillMaxWidth()) {
-                Column {
-                    FilaInterruptor(
-                        texto = "Anuncios personalizados",
-                        detalle = "Permite anuncios relevantes para ti",
-                        icono = Icons.Default.Info,
-                        activo = consentimiento,
-                        onCambio = viewModel::fijarConsentimientoPublicidad
-                    )
-                    Separator()
-                    FilaInterruptor(
-                        texto = "Modo de prueba",
-                        detalle = "Fuerza anuncios de prueba de desarrollo",
-                        icono = Icons.Default.Info,
-                        activo = modoPrueba,
-                        onCambio = viewModel::fijarModoPruebaPublicidad
                     )
                 }
             }

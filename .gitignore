@@ -2,15 +2,22 @@
 .gradle
 /local.properties
 /.idea
+.kotlin/
 .DS_Store
 build/
 /captures
 .externalNativeBuild
 .cxx
 local.properties
+build.log
+ui.xml
+wallance.db
+wallance.db-wal
+wallance.db-shm
 
-# Archivos sensibles: nunca se versionan claves de firma ni contraseños.
+# Archivos sensibles: nunca se versionan claves de firma ni contraseñas.
 *.jks
 *.keystore
 keystore.properties
 secrets.properties
+firma.properties

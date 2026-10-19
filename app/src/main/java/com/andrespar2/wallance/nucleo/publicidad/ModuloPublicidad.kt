@@ -10,7 +10,7 @@ import javax.inject.Singleton
  * Provee el controlador de publicidad de Wallance.
  *
  * Es un objeto sin estado propio (solo controla la inicialización del SDK
- * Start.io), por lo que se entrega siempre la misma instancia.
+ * de publicidad), por lo que se entrega siempre la misma instancia.
  */
 @Module
 @InstallIn(SingletonComponent::class)

@@ -4,13 +4,8 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <group
-        android:scaleX="0.55"
-        android:scaleY="0.55"
-        android:translateX="24.3"
-        android:translateY="24.3">
-        <path
-            android:fillColor="#FCD535"
-            android:pathData="M14,20L28,20L42,58L56,20L70,20L48,80L36,80z" />
-    </group>
+    <!-- Letra "W" de Wallance, trazada con cuatro trazos gruesos. -->
+    <path
+        android:fillColor="#FCD535"
+        android:pathData="M32,34L40,34L49,74L41,74Z M50,34L58,34L49,74L41,74Z M50,34L58,34L67,74L59,74Z M68,34L76,34L67,74L59,74Z" />
 </vector>

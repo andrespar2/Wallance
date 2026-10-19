@@ -40,7 +40,6 @@ class BienvenidaViewModel @Inject constructor(
     var pin by mutableStateOf("")
     var biometriaActiva by mutableStateOf(false)
     var notificacionesActivas by mutableStateOf(true)
-    var consentimientoPublicidad by mutableStateOf(false)
 
     var cargando by mutableStateOf(false)
         private set
@@ -94,7 +93,8 @@ class BienvenidaViewModel @Inject constructor(
                     preferencias.fijarBiometria(biometriaActiva)
                 }
                 preferencias.fijarNotificaciones(notificacionesActivas)
-                preferencias.fijarConsentimientoPublicidad(consentimientoPublicidad)
+                // La publicidad forma parte del funcionamiento de la aplicación gratuita.
+                preferencias.fijarConsentimientoPublicidad(true)
                 preferencias.marcarConfiguracionCompletada()
                 cargando = false
                 onTerminado()

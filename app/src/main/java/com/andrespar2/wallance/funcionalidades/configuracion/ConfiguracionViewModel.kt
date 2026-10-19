@@ -40,14 +40,6 @@ class ConfiguracionViewModel @Inject constructor(
         viewModelScope.launch { preferencias.fijarNotificaciones(habilitadas) }
     }
 
-    fun fijarConsentimientoPublicidad(otorgado: Boolean) {
-        viewModelScope.launch { preferencias.fijarConsentimientoPublicidad(otorgado) }
-    }
-
-    fun fijarModoPruebaPublicidad(activo: Boolean) {
-        viewModelScope.launch { preferencias.fijarModoPruebaPublicidad(activo) }
-    }
-
     fun fijarMonedaPrincipal(codigo: String) {
         viewModelScope.launch { preferencias.fijarMonedaPrincipal(codigo) }
     }

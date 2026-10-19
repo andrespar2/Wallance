@@ -36,7 +36,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.andrespar2.wallance.nucleo.basedatos.entidades.TipoCuenta
 import com.andrespar2.wallance.nucleo.comun.etiqueta
 import com.andrespar2.wallance.nucleo.diseno.ColoresWallance
-import com.andrespar2.wallance.nucleo.diseno.componentes.BotonPeligro
 import com.andrespar2.wallance.nucleo.diseno.componentes.BotonSecundario
 import com.andrespar2.wallance.nucleo.diseno.componentes.BotonWallance
 import com.andrespar2.wallance.nucleo.diseno.componentes.CampoTexto
@@ -89,7 +88,7 @@ fun PantallaBienvenida(
                 3 -> PasoPrimeraCuenta(viewModel)
                 4 -> PasoSeguridad(viewModel)
                 5 -> PasoNotificaciones(viewModel)
-                6 -> PasoPrivacidad(viewModel, onTerminado)
+                6 -> PasoPrivacidad()
             }
 
             viewModel.mensajeError?.let { mensaje ->
@@ -335,7 +334,7 @@ private fun PasoNotificaciones(viewModel: BienvenidaViewModel) {
 }
 
 @Composable
-private fun PasoPrivacidad(viewModel: BienvenidaViewModel, onTerminado: () -> Unit) {
+private fun PasoPrivacidad() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = "Privacidad",
@@ -343,24 +342,11 @@ private fun PasoPrivacidad(viewModel: BienvenidaViewModel, onTerminado: () -> Un
             color = ColoresWallance.TextoPrincipal
         )
         Text(
-            text = "Wallance muestra publicidad de Start.io para mantener la aplicación gratuita. " +
+            text = "Wallance muestra publicidad para mantener la aplicación gratuita. " +
                 "Nunca compartimos tus saldos, contactos ni préstamos con la red publicitaria. " +
-                "Si no otorgas tu consentimiento, la aplicación seguirá funcionando sin anuncios.",
+                "Tus datos permanecen en tu dispositivo.",
             style = MaterialTheme.typography.bodyMedium,
             color = ColoresWallance.TextoSecundario
-        )
-        FilaInterruptor(
-            texto = "Acepto la publicidad personalizada",
-            detalle = "Puedes modificarlo luego en Configuración → Privacidad.",
-            activo = viewModel.consentimientoPublicidad,
-            onCambio = { viewModel.consentimientoPublicidad = it }
-        )
-        BotonPeligro(
-            texto = "Continuar sin publicidad",
-            onClick = {
-                viewModel.consentimientoPublicidad = false
-                viewModel.finalizar(onTerminado)
-            }
         )
     }
 }

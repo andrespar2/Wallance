@@ -53,7 +53,6 @@ import com.andrespar2.wallance.nucleo.publicidad.BannerPublicidad
 fun PantallaInicio(
     moneda: String,
     ocultarMontos: Boolean,
-    consentimientoPublicidad: Boolean,
     onRegistrarMovimiento: () -> Unit,
     onVerMovimientos: () -> Unit,
     onVerPrestamos: () -> Unit,
@@ -425,7 +424,7 @@ fun PantallaInicio(
         }
 
         item {
-            BannerPublicidad(consentimiento = consentimientoPublicidad)
+            BannerPublicidad()
         }
 
         item { Spacer(modifier = Modifier.height(72.dp)) }

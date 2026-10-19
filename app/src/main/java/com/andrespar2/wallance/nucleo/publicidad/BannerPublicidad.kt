@@ -9,22 +9,19 @@ import com.startapp.sdk.ads.banner.Banner
 import com.startapp.sdk.ads.banner.BannerListener
 
 /**
- * Banner publicitario de Start.io integrado en Jetpack Compose.
+ * Banner publicitario integrado en Jetpack Compose.
  *
  * Comportamiento exigido por Wallance:
  * - No ocupa espacio si la red no devuelve inventario (una respuesta sin
  *   anuncio no es un error de la aplicación): la vista queda oculta y mide
  *   cero, por lo que no deja espacios vacíos.
  * - Se libera el recurso al salir de la pantalla.
- * - No aparece si el usuario no otorgó consentimiento publicitario.
+ * - La publicidad es parte del funcionamiento de la aplicación gratuita.
  */
 @Composable
 fun BannerPublicidad(
-    modifier: Modifier = Modifier,
-    consentimiento: Boolean = true
+    modifier: Modifier = Modifier
 ) {
-    if (!consentimiento) return
-
     AndroidView(
         modifier = modifier.fillMaxWidth(),
         factory = { ctx ->

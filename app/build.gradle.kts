@@ -142,7 +142,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
-    // Publicidad Start.io
+    // Red de publicidad integrada en la aplicación
     implementation("com.startapp:inapp-sdk:5.3.1")
 
     // Desaforamiento de java.time para dispositivos antiguos

@@ -5,22 +5,22 @@ import android.content.Context
 import com.startapp.sdk.adsbase.StartAppSDK
 
 /**
- * Controla la integración con la red publicitaria Start.io.
+ * Controla la integración con la red de publicidad de la aplicación.
  *
  * Reglas de Wallance:
  * - El SDK se inicializa una sola vez.
  * - Se desactivan anuncios de retorno y de inicio.
- * - Si Start.io no devuelve inventario, la aplicación continúa funcionando
+ * - Si la red no devuelve inventario, la aplicación continúa funcionando
  *   con normalidad (una respuesta sin anuncio no es un error de la app).
  * - La publicidad nunca aparece en formularios sensibles de préstamos,
  *   seguridad ni confirmaciones de pago.
  */
 object ControladorPublicidad {
 
-    /** ID de aplicación Start.io de Wallance. */
+    /** Identificador de la aplicación Wallance ante la red de publicidad. */
     const val ID_APLICACION = "209590896"
 
-    /** ID de cuenta Start.io de Wallance (referencia administrativa). */
+    /** Identificador de cuenta (referencia administrativa). */
     const val ID_CUENTA = "124493456"
 
     @Volatile
@@ -30,7 +30,7 @@ object ControladorPublicidad {
     val estaInicializado: Boolean get() = inicializado
 
     /**
-     * Inicializa el SDK de Start.io de forma segura y única.
+     * Inicializa el SDK de publicidad de forma segura y única.
      * Cualquier fallo se registra sin bloquear a la aplicación.
      */
     fun inicializar(contexto: Context) {
@@ -46,7 +46,7 @@ object ControladorPublicidad {
             } catch (error: Throwable) {
                 // Una falla del SDK publicitario nunca debe impedir el uso
                 // de Wallance.
-                android.util.Log.w("WallancePublicidad", "No fue posible inicializar Start.io", error)
+                android.util.Log.w("WallancePublicidad", "No fue posible inicializar la red de publicidad", error)
             }
         }
     }
