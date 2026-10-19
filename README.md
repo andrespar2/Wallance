@@ -139,10 +139,10 @@ La clave de firma **nunca** se versiona. Crea un archivo `firma.properties` en l
 raíz del proyecto con:
 
 ```properties
-storeFile=ruta/a/tu/clave.jks
-storePassword=tu_contraseña
-keyAlias=tu_alias
-keyPassword=tu_contraseña
+almacen=ruta/a/tu/clave.jks
+claveAlmacen=tu_contraseña
+alias=tu_alias
+claveLlave=tu_contraseña
 ```
 
 Si el archivo no existe, el proyecto compila igualmente en modo depuración.
